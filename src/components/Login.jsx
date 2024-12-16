@@ -1,24 +1,75 @@
 import { useRef, useState } from "react";
 import Header from "./Header";
 import { checkFormValidate } from "../utils/checkFormValidate";
+import { auth } from "../utils/firebase";
+import { createUserWithEmailAndPassword ,signInWithEmailAndPassword } from "firebase/auth";
+import { useDispatch ,useSelector } from "react-redux";
+import {addUser} from "../utils/userSlice"
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
-  const [errorMessage,setErrorMessage] = useState(null)
+  const [errorMessage,setErrorMessage] = useState(null);
+
+
+ const count = useSelector((state) => state.initialState)
+ console.log(count);
+ 
+  const dispatch = useDispatch();
 
   const email = useRef(null);
   const password = useRef(null);
+  const name = useRef(null);
 
   const handelSignin = () => {
     setIsSignIn(!isSignIn);
   };
 
-  const handleFormSubmit = () =>{
+  const handleFormSubmit = async () =>{
     const emailValue = email.current.value;
     const passwordValue = password.current.value;  
 
     const message = checkFormValidate(emailValue,passwordValue);
     setErrorMessage(message);
+    if(message) return;
+
+    if(!isSignIn)
+    {
+    // sign up ka code 
+    createUserWithEmailAndPassword(auth,emailValue, passwordValue)
+  .then((userCredential) => {
+    // Signed up 
+    const user = userCredential.user;
+    console.log(user.uid);
+    
+    dispatch(addUser(user.uid))
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode+ "-" + errorMessage);
+  });
+    }
+    else{
+      // sign in ka code 
+     
+   await signInWithEmailAndPassword(auth, emailValue, passwordValue)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(user);
+    
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+
+    setErrorMessage(errorCode+errorMessage+"Eamil ya Password Check kr ;😒");
+    
+  });
+
+    }
     
   }
 
@@ -38,7 +89,8 @@ const Login = () => {
         </h1>
         {!isSignIn && (
           <input
-            className="p-2 my-4 w-full bg-gray-700 rounded-md"
+          ref={name}
+            className="p-2 my-4 w-full bg-gray-700 rounded-md  text-white"
             type="text"
             placeholder="Full Name"
           />
