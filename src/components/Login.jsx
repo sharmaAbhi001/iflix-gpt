@@ -2,19 +2,23 @@ import { useRef, useState } from "react";
 import Header from "./Header";
 import { checkFormValidate } from "../utils/checkFormValidate";
 import { auth } from "../utils/firebase";
-import { createUserWithEmailAndPassword ,signInWithEmailAndPassword } from "firebase/auth";
-import { useDispatch ,useSelector } from "react-redux";
-import {addUser} from "../utils/userSlice"
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile
+} from "firebase/auth";
+import {  useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
+
+
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
-  const [errorMessage,setErrorMessage] = useState(null);
-
-
- const count = useSelector((state) => state.initialState)
- console.log(count);
- 
+  const [errorMessage, setErrorMessage] = useState(null);
+  const navigate = useNavigate()
   const dispatch = useDispatch();
+
 
   const email = useRef(null);
   const password = useRef(null);
@@ -24,55 +28,65 @@ const Login = () => {
     setIsSignIn(!isSignIn);
   };
 
-  const handleFormSubmit = async () =>{
+  const handleFormSubmit = async () => {
     const emailValue = email.current.value;
-    const passwordValue = password.current.value;  
+    const passwordValue = password.current.value;
 
-    const message = checkFormValidate(emailValue,passwordValue);
+    const message = checkFormValidate(emailValue, passwordValue);
     setErrorMessage(message);
-    if(message) return;
+    if (message) return;
 
-    if(!isSignIn)
-    {
-    // sign up ka code 
-    createUserWithEmailAndPassword(auth,emailValue, passwordValue)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-    console.log(user.uid);
-    
-    dispatch(addUser(user.uid))
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.log(errorCode+ "-" + errorMessage);
-  });
+    if (!isSignIn) {
+      // sign up ka code
+      createUserWithEmailAndPassword(auth, emailValue, passwordValue)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          updateProfile(user, {
+            displayName: name.current.value, photoURL: "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174401.jpg?semt=ais_hybrid"
+          }).then(() => {
+            // Profile updated!
+            // ...
+            const { uid, email, displayName, photoURL } = auth.currentUser;
+             dispatch(
+                      addUser({
+                        uid: uid,
+                        email: email,
+                        displayName: displayName,
+                        photoURL: photoURL,
+                      }))
+            navigate("/browse");
+          }).catch((error) => {
+            // An error occurred
+            // ...
+          });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    } else {
+      // sign in ka code
+
+      await signInWithEmailAndPassword(auth, emailValue, passwordValue)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          navigate("/browse")
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+
+          setErrorMessage(
+            errorCode + errorMessage + "Eamil ya Password Check kr ;😒"
+          );
+        });
     }
-    else{
-      // sign in ka code 
-     
-   await signInWithEmailAndPassword(auth, emailValue, passwordValue)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    console.log(user);
-    
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-
-    setErrorMessage(errorCode+errorMessage+"Eamil ya Password Check kr ;😒");
-    
-  });
-
-    }
-    
-  }
-
+  };
 
   return (
     <div>
@@ -83,26 +97,29 @@ const Login = () => {
           alt="bg-img"
         />
       </div>
-      <form onSubmit={(e)=>e.preventDefault()} className="absolute w-3/12 p-12 mx-auto right-0 left-0 my-36 bg-black bg-opacity-80 rounded-md">
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="absolute w-3/12 p-12 mx-auto right-0 left-0 my-36 bg-black bg-opacity-80 rounded-md"
+      >
         <h1 className="text-white font-bold text-3xl">
           {isSignIn ? "Sign In" : "Sign Up"}
         </h1>
         {!isSignIn && (
           <input
-          ref={name}
+            ref={name}
             className="p-2 my-4 w-full bg-gray-700 rounded-md  text-white"
             type="text"
             placeholder="Full Name"
           />
         )}
         <input
-        ref={email}
+          ref={email}
           className="p-2 my-4 w-full bg-gray-700 rounded-md text-white"
           type="text"
           placeholder="Email"
         />
         <input
-        ref={password}
+          ref={password}
           className="p-2 my-4 w-full bg-gray-700 rounded-md text-white"
           type="password"
           placeholder="password"

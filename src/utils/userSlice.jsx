@@ -7,14 +7,14 @@ export const userSlice = createSlice({
      addUser: (state,action) =>{
         return action.payload
      },
-     removeUser:(state,action) =>{
+     removeUser:(state) =>{
         return null;
      }
     },
   })
   
   // Action creators are generated for each case reducer function
-  export const { addUser } = userSlice.actions
+  export const { addUser,removeUser } = userSlice.actions
   
   export default userSlice.reducer;
   
