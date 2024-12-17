@@ -17,3 +17,6 @@ Currently, two official plugins are available:
 -routing 
 -signUp and Sign-in Form validation 
 -implement signOut 
+
+-BugFix : signup user displaye name
+-BugFix : redirect to auth page and page according to log-in or log-out
