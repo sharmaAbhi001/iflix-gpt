@@ -20,3 +20,17 @@ Currently, two official plugins are available:
 
 -BugFix : signup user displaye name
 -BugFix : redirect to auth page and page according to log-in or log-out
+
+-get request on tmdb for movie
+-create a redux slice for movie
+-subscribe movie by selector 
+-display on browse page 
+-create mainContainer component
+-create SecondaryContainer component
+-create movieInfo and moviebackgroun  component
+-get data from TMDB playing movies list 
+-custom hook for nowPlaying movie
+-custum hook for movie trailer 
+-update store with trailer data 
+-Embaded the Youtube video and make it autoplay amd mute 
+-Tailwind classes to make it look awesome
