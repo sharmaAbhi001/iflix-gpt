@@ -34,3 +34,6 @@ Currently, two official plugins are available:
 -update store with trailer data 
 -Embaded the Youtube video and make it autoplay amd mute 
 -Tailwind classes to make it look awesome
+-GPT Search Page 
+-GPT Search Bar
+-Add Multi-Language Feature  

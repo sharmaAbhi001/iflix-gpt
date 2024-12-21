@@ -5,7 +5,6 @@ const BackgrounVideo = ({ id }) => {
   useTrailerVideo(id);
 
   const trailer = useSelector((state) => state.movies.movieTrailer);
-  console.log(trailer?.key);
   if (trailer === null) return;
 
   return (
@@ -13,10 +12,12 @@ const BackgrounVideo = ({ id }) => {
       <iframe
         className="w-screen aspect-video"
         src={
-          "https://www.youtube.com/embed/" + trailer.key + "?autoplay=1&mute=1"
+          "https://www.youtube.com/embed/" +
+          trailer.key +
+          "?autoplay=1&mute=1&loop=1&playlist=" +
+          trailer.key
         }
         title="YouTube video player"
-        frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
         referrerPolicy="strict-origin-when-cross-origin"
         allowfullscreen
