@@ -15,6 +15,7 @@ firebase.jsx
 .firebaserc
 firebase.json
 constents.jsx
+.env
 
 # Editor directories and files
 .vscode/*
